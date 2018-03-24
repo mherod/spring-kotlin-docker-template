@@ -35,7 +35,8 @@ if (gitRevCount == 0) {
 group = 'co.herod'
 version = "0.0.$gitRevCount-SNAPSHOT"
 
-ext.mainClassName = 'co.herod.saysparty.BackendApplicationKt'
+ext.projectPackage = "${rootProject.group}.${rootProject.name}".replaceAll("-", "_")
+ext.mainClassName = "${projectPackage}.BackendApplicationKt".toString()
 //noinspection GroovyUnusedAssignment
 mainClassName = ext.mainClassName
 
@@ -64,6 +65,18 @@ compileTestKotlin {
 
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+    generated {
+        java.srcDir file("src/generated/java")
+    }
+}
+
+for (sourceSet in sourceSets) {
+    sourceSet.java.srcDirs.each { sourceDir ->
+        sourceDir.mkdirs()
+    }
 }
 
 bootRun {
@@ -101,3 +114,24 @@ task deployDocker(type: Task) {
         "sh deploy-docker.sh".execute().inputStream.eachLine { println it }
     }
 }
+
+task generateBuildConfig(type: Task) {
+    doLast {
+        def genSourceDir = sourceSets.generated.java.srcDirs.first()
+        def genSrcPath = "$genSourceDir.path/${projectPackage.replace('.', '/')}"
+        file(genSrcPath).mkdirs()
+        def buildConfigFilePath = "$genSrcPath/BuildConfig.java"
+        println buildConfigFilePath
+        def buildConfigFile = file(buildConfigFilePath)
+        buildConfigFile.text = """
+package ${rootProject.projectPackage};
+
+public class BuildConfig {
+    public static final String PROJECT_NAME = "${rootProject.name}";
+}
+""".trim().toString()
+    }
+}
+compileGeneratedJava.mustRunAfter generateBuildConfig
+assemble.mustRunAfter generateBuildConfig
+assemble.dependsOn generateBuildConfig
