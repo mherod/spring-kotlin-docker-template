@@ -36,7 +36,14 @@ group = 'co.herod'
 version = "0.0.$gitRevCount-SNAPSHOT"
 
 ext.mainClassName = 'co.herod.saysparty.BackendApplicationKt'
+//noinspection GroovyUnusedAssignment
 mainClassName = ext.mainClassName
+
+println "Project name: $rootProject.name"
+println "Project group: $rootProject.group"
+println "Project version: $rootProject.version"
+println "Project mainClassName: $rootProject.mainClassName"
+println "Project sourceCompatibility: $rootProject.sourceCompatibility"
 
 sourceCompatibility = 1.8
 
@@ -81,6 +88,18 @@ dependencies {
     runtime 'mysql:mysql-connector-java'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
     testCompile 'org.springframework.security:spring-security-test'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.7'
+    def calendar = Calendar.instance
+    def yearNumber = calendar.get(Calendar.YEAR)
+    def monthNumber = String.format('%02d', calendar.get(Calendar.MONTH))
+    def dayNumber = String.format('%02d', calendar.get(Calendar.DAY_OF_MONTH))
+    def dateString = "${yearNumber}${monthNumber}${dayNumber.toInteger() - 1}"
+//    println dateString
+    distributionUrl = "https://services.gradle.org/distributions-snapshots/gradle-$gradleVersion-${dateString}000001+0000-all.zip"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 task deployDocker {
