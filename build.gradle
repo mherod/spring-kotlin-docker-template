@@ -33,8 +33,7 @@ if (gitRevCount == 0) {
 }
 
 group = 'co.herod'
-version = "0.0.$gitRevCount-SNAPSHOT"
-
+version = ext.version = "0.0.$gitRevCount-SNAPSHOT"
 ext.projectPackage = "${rootProject.group}.${rootProject.name}".replaceAll("-", "_")
 ext.mainClassName = "${projectPackage}.BackendApplicationKt".toString()
 //noinspection GroovyUnusedAssignment
@@ -66,10 +65,12 @@ compileTestKotlin {
 repositories {
     mavenCentral()
 }
+
 sourceSets {
     generated {
-        java.srcDir file("src/generated/java")
-        java.srcDir file("src/generated/kotlin")
+        ["java", "kotlin"].each {
+            java.srcDir file("src/generated/$it")
+        }
         resources.srcDir file("src/generated/resources")
     }
     main {
@@ -133,6 +134,9 @@ package ${rootProject.projectPackage};
 public class BuildConfig {
     @SuppressWarnings("unused")
     public static final String PROJECT_NAME = "${rootProject.name}";
+
+    @SuppressWarnings("unused")
+    public static final String PROJECT_VERSION = "${rootProject.version}";
 }
 """.trim().toString()
     }
