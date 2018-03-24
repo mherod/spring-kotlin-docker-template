@@ -77,8 +77,6 @@ sourceSets {
     }
     main {
         java.srcDirs += generated.java.srcDirs
-
-
     }
 }
 
@@ -162,6 +160,9 @@ public class $buildConfigClassName {
 
     @SuppressWarnings("unused")
     public static final String PROJECT_VERSION = "${rootProject.version}";
+
+    @SuppressWarnings("unused")
+    public static final String MAIN_CLASS_NAME = "${rootProject.mainClassName}";
 }
 """.trim().toString()
     }
