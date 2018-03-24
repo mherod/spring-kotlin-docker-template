@@ -66,10 +66,14 @@ compileTestKotlin {
 repositories {
     mavenCentral()
 }
-
 sourceSets {
     generated {
         java.srcDir file("src/generated/java")
+        java.srcDir file("src/generated/kotlin")
+        resources.srcDir file("src/generated/resources")
+    }
+    main {
+        java.srcDirs += generated.java.srcDirs
     }
 }
 
@@ -127,6 +131,7 @@ task generateBuildConfig(type: Task) {
 package ${rootProject.projectPackage};
 
 public class BuildConfig {
+    @SuppressWarnings("unused")
     public static final String PROJECT_NAME = "${rootProject.name}";
 }
 """.trim().toString()
