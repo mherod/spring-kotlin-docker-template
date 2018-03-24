@@ -1,6 +1,5 @@
-package co.herod.saysparty
+package co.herod.spring_kotlin_docker_template
 
-import co.herod.spring_kotlin_docker_template.BuildConfig
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 

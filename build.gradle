@@ -33,11 +33,13 @@ if (gitRevCount == 0) {
 }
 
 group = 'co.herod'
-version = ext.version = "0.0.$gitRevCount-SNAPSHOT"
+version = ext.version = "0.0.${gitRevCount}-SNAPSHOT".toString()
 ext.projectPackage = "${rootProject.group}.${rootProject.name}".replaceAll("-", "_")
 ext.mainClassName = "${projectPackage}.BackendApplicationKt".toString()
 //noinspection GroovyUnusedAssignment
 mainClassName = ext.mainClassName
+
+ext.groupPackagePath = group.replace('.', '/')
 
 println "Project name: $rootProject.name"
 println "Project group: $rootProject.group"
@@ -69,18 +71,40 @@ repositories {
 sourceSets {
     generated {
         ["java", "kotlin"].each {
-            java.srcDir file("src/generated/$it")
+            java.srcDir file("src/$name/$it")
         }
-        resources.srcDir file("src/generated/resources")
+        resources.srcDir file("src/$name/resources")
     }
     main {
         java.srcDirs += generated.java.srcDirs
+
+
     }
 }
 
 for (sourceSet in sourceSets) {
+    ["java", "kotlin"].each {
+        sourceSet.java.srcDir file("src/$sourceSet.name/$it")
+    }
+    sourceSet.resources.srcDir file("src/$sourceSet.name/resources")
+}
+
+for (sourceSet in sourceSets) {
+//    println sourceSet.name
     sourceSet.java.srcDirs.each { sourceDir ->
         sourceDir.mkdirs()
+        if (!sourceSets.generated.java.srcDirs.contains(sourceDir)) {
+            def groupPathString = "${sourceDir.path}/${rootProject.groupPackagePath}"
+            println "aaa $groupPathString"
+            def groupPathFile = file(groupPathString)
+            groupPathFile.listFiles().each { File file ->
+                if (file.isDirectory()) {
+                    def string = "$groupPathString/${rootProject.name.replace('-', '_')}"
+                    println string
+                    file.renameTo(string)
+                }
+            }
+        }
     }
 }
 
@@ -90,7 +114,7 @@ bootRun {
 shadowJar {
     mainClassName = rootProject.mainClassName
     version = rootProject.version
-    baseName = 'my-application'
+    baseName = rootProject.name
     classifier = null
 }
 
@@ -122,16 +146,17 @@ task deployDocker(type: Task) {
 
 task generateBuildConfig(type: Task) {
     doLast {
+        def buildConfigClassName = "BuildConfig"
         def genSourceDir = sourceSets.generated.java.srcDirs.first()
         def genSrcPath = "$genSourceDir.path/${projectPackage.replace('.', '/')}"
         file(genSrcPath).mkdirs()
-        def buildConfigFilePath = "$genSrcPath/BuildConfig.java"
+        def buildConfigFilePath = "$genSrcPath/${buildConfigClassName}.java"
         println buildConfigFilePath
         def buildConfigFile = file(buildConfigFilePath)
         buildConfigFile.text = """
 package ${rootProject.projectPackage};
 
-public class BuildConfig {
+public class $buildConfigClassName {
     @SuppressWarnings("unused")
     public static final String PROJECT_NAME = "${rootProject.name}";
 
