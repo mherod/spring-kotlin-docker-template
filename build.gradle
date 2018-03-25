@@ -125,7 +125,9 @@ dependencies {
 }
 
 task cleanVcs(type: Task) {
-    "git clean -fXd".execute().inputStream.eachLine { println it }
+    doLast {
+        "git clean -fXd".execute().inputStream.eachLine { println it }
+    }
 }
 
 task deployDocker(type: Task) {
