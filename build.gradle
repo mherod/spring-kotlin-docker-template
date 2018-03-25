@@ -124,6 +124,10 @@ dependencies {
     testCompile 'org.springframework.security:spring-security-test'
 }
 
+task cleanVcs(type: Task) {
+    "git clean -fXd".execute().inputStream.eachLine { println it }
+}
+
 task deployDocker(type: Task) {
     build.dependsOn += clean
     dependsOn += build
