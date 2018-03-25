@@ -140,6 +140,7 @@ task deployDocker(type: Task) {
     }
 }
 
+
 task generateBuildConfig(type: Task) {
     doLast {
         def buildConfigClassName = "BuildConfig"
@@ -165,6 +166,9 @@ public class $buildConfigClassName {
 """.trim().toString()
     }
 }
+
+deployDocker.mustRunAfter assemble
+deployDocker.dependsOn assemble
 compileGeneratedJava.mustRunAfter generateBuildConfig
 assemble.mustRunAfter generateBuildConfig
 assemble.dependsOn generateBuildConfig
