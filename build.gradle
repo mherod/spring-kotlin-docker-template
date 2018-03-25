@@ -26,15 +26,11 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-ext.gitRevCount = 0
-if (gitRevCount == 0) {
-    ext.gitRevCount = "git rev-list HEAD --count"
-            .execute().text.trim().toInteger()
-}
-
+ext.gitRevCount = "git rev-list HEAD --count".execute().text.trim().toInteger()
 group = 'co.herod'
 version = ext.version = "0.0.${gitRevCount}-SNAPSHOT".toString()
-ext.projectPackage = "${rootProject.group}.${rootProject.name}".replaceAll("-", "_")
+ext.sanitisedProjectName = "${name}".replace('-', '')
+ext.projectPackage = "${group}.${sanitisedProjectName}".replace('-', '')
 ext.mainClassName = "${projectPackage}.BackendApplicationKt".toString()
 //noinspection GroovyUnusedAssignment
 mainClassName = ext.mainClassName
@@ -80,26 +76,22 @@ sourceSets {
     }
 }
 
-for (sourceSet in sourceSets) {
+sourceSets.forEach { sourceSet ->
     ["java", "kotlin"].each {
         sourceSet.java.srcDir file("src/$sourceSet.name/$it")
     }
     sourceSet.resources.srcDir file("src/$sourceSet.name/resources")
 }
-
-for (sourceSet in sourceSets) {
-//    println sourceSet.name
+sourceSets.forEach { sourceSet ->
+    sourceSet.java.srcDirs.forEach { it.mkdirs() }
+}
+sourceSets.forEach { sourceSet ->
     sourceSet.java.srcDirs.each { sourceDir ->
-        sourceDir.mkdirs()
         if (!sourceSets.generated.java.srcDirs.contains(sourceDir)) {
             def groupPathString = "${sourceDir.path}/${rootProject.groupPackagePath}"
-            println "aaa $groupPathString"
-            def groupPathFile = file(groupPathString)
-            groupPathFile.listFiles().each { File file ->
+            file(groupPathString).listFiles().each { File file ->
                 if (file.isDirectory()) {
-                    def string = "$groupPathString/${rootProject.name.replace('-', '_')}"
-                    println string
-                    file.renameTo(string)
+                    file.renameTo("$groupPathString/${sanitisedProjectName}")
                 }
             }
         }
