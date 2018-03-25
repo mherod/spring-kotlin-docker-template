@@ -26,14 +26,8 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-try {
-    ext.gitRevCount = "git rev-list HEAD --count".execute().text.trim().toInteger()
-} catch (e) {
-    ext.gitRevCount = 0
-}
-
 group = 'co.herod'
-version = ext.version = "0.0.${gitRevCount}-SNAPSHOT".toString()
+version = ext.version = file('.version').text
 ext.sanitisedProjectName = "${name}".replace('-', '')
 ext.projectPackage = "${group}.${sanitisedProjectName}".replace('-', '')
 ext.mainClassName = "${projectPackage}.BackendApplicationKt".toString()
@@ -48,8 +42,8 @@ println "Project version: $rootProject.version"
 println "Project mainClassName: $rootProject.mainClassName"
 println "Project sourceCompatibility: $rootProject.sourceCompatibility"
 
-file('.version').text = "git rev-list HEAD --count".execute().text
 file('.name').text = rootProject.name
+file('.version').text = rootProject.version
 
 sourceCompatibility = 1.8
 
