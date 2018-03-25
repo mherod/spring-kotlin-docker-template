@@ -27,11 +27,14 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 ext.gitRevCount = "git rev-list HEAD --count".execute().text.trim().toInteger()
-group = 'co.herod'
-version = ext.version = "0.0.${gitRevCount}-SNAPSHOT".toString()
+ext.group = 'co.herod'
+ext.version = "0.0.${gitRevCount}-SNAPSHOT".toString()
+group = ext.group
+version = ext.version
 ext.sanitisedProjectName = "${name}".replace('-', '')
 ext.projectPackage = "${group}.${sanitisedProjectName}".replace('-', '')
 ext.mainClassName = "${projectPackage}.BackendApplicationKt".toString()
+
 //noinspection GroovyUnusedAssignment
 mainClassName = ext.mainClassName
 
