@@ -4,7 +4,7 @@ buildscript {
         it.args.any { it.startsWith("deploy") }
     }
     ext {
-        kotlinVersion = '1.2.41'
+        kotlinVersion = '1.2.50'
         springBootVersion = '2.0.2.RELEASE'
     }
     repositories {
