@@ -1,4 +1,4 @@
-FROM mherod/base-ubuntu-java:latest@sha256:4bcd521671261cd2c05c3bfb50018510cd7eddcc802d9d66589128af04845d56
+FROM mherod/base-ubuntu-java:latest@sha256:024fb95d6baef6b0240e6201337823253767b0adb7502e9f18912c8ea4e65de2
 
 COPY build/libs/*.jar /root/
 WORKDIR /root
